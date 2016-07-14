@@ -3,7 +3,7 @@
 - name: Remove mongo image
   command: docker rmi {{ mongo_image_name }}
   become: yes
-
+  
 - name: Build mongo image
   command: docker build -t {{ mongo_image_name }} {{ dockerfile_repository }}
   become: yes

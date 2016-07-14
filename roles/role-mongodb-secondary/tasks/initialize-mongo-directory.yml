@@ -24,9 +24,18 @@
     mode: 0777
   become: yes
   
-- name: Create mongo-file directory if not exist
+- name: Create mongo-data directory if not exist
   file: 
     path: "{{ mongodb_work_path }}/data"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+  
+- name: Create mongo-log directory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}/log"
     owner: root
     group: root
     state: directory
