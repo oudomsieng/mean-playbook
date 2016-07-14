@@ -1,0 +1,43 @@
+---
+
+- include: initialize-mongo-directory.yml
+
+- name: Check if mongodb-keyfile already exists
+  stat: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
+  register: mongodbkeyfile
+  
+- name: Create openssl keyfile if not exist
+  command: "openssl rand -base64 741 > {{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
+  when: mongodbkeyfile.stat.islnk is not defined
+  become: yes
+  
+- name: Set file permission
+  file: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" owner=999 mode=600
+  when: mongodbkeyfile.stat.islnk is not defined
+  
+- include: remove-mongo-container.yml
+
+- include: rebuild-mongo-image.yml
+  
+- name: Run mongo container for adding users
+  command: docker run --name {{ mongo_container_name }} -v "{{ mongodb_work_path }}/mongo-files":/opt/keyfile -v "{{ mongodb_work_path }}/data":/data/db --hostname=\"{{ node1_hostname }}\" -p 27017:27017 -d {{ mongo_image_name }} mongod
+  become: yes
+  
+- name: Add admin user to mongo
+  command: docker exec -d {{ mongo_container_name }} mongo admin --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_admin_user }}', pwd":" '{{ mongo_admin_pass }}', roles":" [{role":" 'userAdminAnyDatabase', db":" 'admin'}]})"
+  become: yes
+
+- name: Add root user to mongo
+  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval \"db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_root_user }}', pwd":" '{{ mongo_root_pass }}', roles":" [{role":" 'root', db":" 'admin'}]})\"
+  become: yes
+
+- include: remove-mongo-container.yml
+
+- name: Relaunch mongo container with replica set config
+  command: docker run --name {{ mongo_container_name }} -v "{{ mongodb_work_path }}/mongo-files":/opt/keyfile -v "{{ mongodb_work_path }}/data":/data/db --hostname=\"{{ node1_hostname }}\" --add-host {{ node1_hostname }}:{{ mongodb_node1_ip_address }} --add-host {{ node2_hostname }}:{{ mongodb_node2_ip_address }} -p 27017:27017 -d {{ mongo_image_name }} mongod --config /etc/mongod.conf
+  become: yes
+
+- name: Initiate mongodb replica set
+  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval \"db.runCommand({replSetInitiate ":"{_id":" 'rs0', members":" [{_id":" 0, host":" '{{ node1_hostname }}":"27017'}]}})\"
+
+  

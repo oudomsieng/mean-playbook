@@ -1,0 +1,9 @@
+---
+
+- name: Stop mongo container
+  command: docker stop {{ mongo_container_name }}
+  become: yes
+
+- name: Remove mongo container
+  command: docker rm {{ mongo_container_name }}
+  become: yes

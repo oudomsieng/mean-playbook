@@ -1,0 +1,47 @@
+- name: Checking if ansible_distribution_major_version and ansible_distribution are not defined
+  fail:
+    msg: "Ansible distribution or ansible distribution version are not defined"
+  when: ansible_distribution_major_version is not defined or ansible_distribution is not defined
+
+- name: Checking if target server is not CentOS 7
+  fail:
+    msg: "This role can only be run on CentOS 7 servers"
+  when: ansible_distribution != "CentOS" or (ansible_distribution == "CentOS" and ansible_distribution_major_version != "7")
+
+- name: test input vars
+  assert: { that: "{{ item }} is defined" }
+  with_items:
+      - mongodb_work_path
+      - mongo_admin_user
+      - mongo_admin_pass
+      - mongo_root_user
+      - mongo_root_pass
+      - dockerfile_repository
+  when: mongodb_deploy_config
+
+- name: Create mongo working diectory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+  
+- name: Create mongo-file directory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}/data"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+  
+- name: Create mongo-file directory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}/mongo-files"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes

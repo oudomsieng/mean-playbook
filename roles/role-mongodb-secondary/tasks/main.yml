@@ -1,0 +1,3 @@
+---
+# tasks file for role-mongodb-secondary
+- include: launch-secondary-mongo-container.yml
