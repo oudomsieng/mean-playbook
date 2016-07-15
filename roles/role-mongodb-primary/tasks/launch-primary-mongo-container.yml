@@ -1,6 +1,24 @@
 ---
 
 - include: initialize-mongo-directory.yml
+
+- name: Check if mongodb-keyfile already exists
+  stat: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
+  register: mongodbkeyfile
+
+- name: Create openssl keyfile if not exist
+  command: openssl rand -base64 741 -out "{{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
+  when: mongodbkeyfile.stat.islnk is not defined
+  
+- name: Set file permission
+  file: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" owner=999 mode=600
+  become: yes
+  
+- debug: var=temporary_directory  
+
+- name: Copy keyfile from node1 to local box
+  fetch: src="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" dest="{{ temporary_directory }}/" flat=yes
+  become: yes
   
 - include: remove-mongo-container.yml
 
@@ -21,6 +39,10 @@
 - include: remove-mongo-container.yml
 
 - name: Relaunch mongo container with replica set config
-  command: docker run --name {{ mongo_container_name }} -v "{{ mongodb_work_path }}/mongo-files":/opt/keyfile -v "{{ mongodb_work_path }}/data":/data/db -v "{{ mongodb_work_path }}/log":/var/log/mongodb --hostname=\"{{ node1_hostname }}\" --add-host {{ node1_hostname }}:{{ mongodb_node1_ip_address }} --add-host {{ node2_hostname }}:{{ mongodb_node2_ip_address }} -p 27017:27017 -d {{ mongo_image_name }} mongod --config /etc/mongod.conf
+  command: docker run --name {{ mongo_container_name }} -v "{{ mongodb_work_path }}/mongo-files":/opt/keyfile -v "{{ mongodb_work_path }}/data":/data/db -v "{{ mongodb_work_path }}/log":/var/log/mongodb --hostname=\"{{ node1_hostname }}\" --add-host {{ node1_hostname }}:{{ mongodb_node1_ip_address }} --add-host {{ node2_hostname }}:{{ mongodb_node2_ip_address }} -p 27017:27017 -d {{ mongo_image_name }} mongod --config /etc/final-mongod.conf
+  become: yes
+
+- name: Initiate Replica set  
+  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval "rs.initiate()"
   become: yes
   
