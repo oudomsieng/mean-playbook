@@ -13,8 +13,6 @@
 - name: Set file permission
   file: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" owner=999 mode=600
   become: yes
-  
-- debug: var=temporary_directory  
 
 - name: Copy keyfile from node1 to local box
   fetch: src="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" dest="{{ temporary_directory }}/" flat=yes
@@ -31,7 +29,7 @@
 - name: Add admin user to mongo
   command: docker exec -d {{ mongo_container_name }} mongo admin --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_admin_user }}', pwd":" '{{ mongo_admin_pass }}', roles":" [{role":" 'userAdminAnyDatabase', db":" 'admin'}]})"
   become: yes
-
+  
 - name: Add root user to mongo
   command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_root_user }}', pwd":" '{{ mongo_root_pass }}', roles":" [{role":" 'root', db":" 'admin'}]})"
   become: yes
