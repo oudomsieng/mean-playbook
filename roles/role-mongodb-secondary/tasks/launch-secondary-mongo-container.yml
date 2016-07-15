@@ -3,11 +3,7 @@
 - include: initialize-mongo-directory.yml
 
 - name: Copy keyfile from local box to node2
-  copy: src="{{ temporary_directory }}/mongodb-keyfile" dest="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
-  become: yes
-  
-- name: Set file permission
-  file: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" owner=999 mode=600
+  copy: src="{{ temporary_directory }}/mongodb-keyfile" dest="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" owner=999 mode=600
   become: yes
   
 - include: remove-mongo-container.yml
