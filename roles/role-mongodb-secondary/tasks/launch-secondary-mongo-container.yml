@@ -1,16 +1,6 @@
 ---
 
 - include: initialize-mongo-directory.yml
-
-- name: Copy keyfile from node1
-  synchronize: src="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" dest="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
-  delegate_to: {{ mongodb_node1_ip_address }}
-  become: yes
-  
-- name: Set file permission
-  file: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" owner=999 mode=600
-  when: mongodbkeyfile.stat.islnk is not defined
-  become: yes
   
 - include: remove-mongo-container.yml
 

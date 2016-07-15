@@ -12,7 +12,7 @@
        mongo_root_user: siteRoot, 
        mongo_root_pass: root, 
        dockerfile_repository: "https://github.com/oudomsieng/mongodb-docker.git"
-	 }
+     }
 
 - hosts: MONGODB_SECONDARY
   roles:

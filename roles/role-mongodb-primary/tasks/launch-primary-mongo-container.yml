@@ -1,19 +1,6 @@
 ---
 
 - include: initialize-mongo-directory.yml
-
-- name: Check if mongodb-keyfile already exists
-  stat: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
-  register: mongodbkeyfile
-  
-- name: Create openssl keyfile if not exist
-  command: openssl rand -base64 741 -out "{{ mongodb_work_path }}/mongo-files/mongodb-keyfile"
-  when: mongodbkeyfile.stat.islnk is not defined
-  
-- name: Set file permission
-  file: path="{{ mongodb_work_path }}/mongo-files/mongodb-keyfile" owner=999 mode=600
-  when: mongodbkeyfile.stat.islnk is not defined
-  become: yes
   
 - include: remove-mongo-container.yml
 
@@ -28,7 +15,7 @@
   become: yes
 
 - name: Add root user to mongo
-  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval \"db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_root_user }}', pwd":" '{{ mongo_root_pass }}', roles":" [{role":" 'root', db":" 'admin'}]})\"
+  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_root_user }}', pwd":" '{{ mongo_root_pass }}', roles":" [{role":" 'root', db":" 'admin'}]})"
   become: yes
 
 - include: remove-mongo-container.yml

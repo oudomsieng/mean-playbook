@@ -1,7 +1,9 @@
 ---
 
-- name: Remove mongo image
-  command: docker rmi {{ mongo_image_name }}
+- name: Remove image
+  docker_image:
+    state: absent
+    name: "{{ mongo_image_name }}"
   become: yes
   
 - name: Build mongo image
