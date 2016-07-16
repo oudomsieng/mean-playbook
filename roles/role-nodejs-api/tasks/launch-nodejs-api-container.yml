@@ -16,11 +16,23 @@
       - nodejs_work_path
       - soc_api_version
       - dockerfile_repository
+      - soc_api_logpath
+      - mongodb_node1_ip_address
+      - mongodb_node2_ip_address
   when: nodejs_deploy_config
   
 - name: Create nodejs working diectory if not exist
   file: 
     path: "{{ nodejs_work_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+  
+- name: Create nodejs logging diectory if not exist
+  file: 
+    path: "{{ soc_api_logpath }}"
     owner: root
     group: root
     state: directory
@@ -38,12 +50,17 @@
     dest: "{{ nodejs_work_path }}/soc-api"
     version: "{{ soc_api_version }}"
 
+- name: infrastructure config for app
+  template:
+    src: infra-prod.json.j2
+    dest: "{{ nodejs_work_path }}/soc-api/config/infra-prod.json"
+
 - name: Install nodejs project dependencies
   npm:
     production: yes
     path: "{{ nodejs_work_path }}/soc-api"
 
 - name: Run nodejs container
-  command: docker run --name {{ nodejs_container_name }} -v "{{ nodejs_work_path }}/soc-api":/usr/src/soc-api --hostname=\"{{ nodejs_api_hostname }}\" -p 8000:8000 -d {{ nodejs_image_name }}
+  command: docker run --name {{ nodejs_container_name }} -v "{{ nodejs_work_path }}/soc-api":/usr/src/soc-api -v "{{ soc_api_logpath }}":/var/log/soc-api --hostname=\"{{ nodejs_api_hostname }}\" -p 8000:8000 -d {{ nodejs_image_name }} node index.js --logPath=/var/log/soc-api/
   become: yes
   
