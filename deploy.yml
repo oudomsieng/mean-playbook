@@ -22,6 +22,7 @@
        mongodb_deploy_config: true,
        mongo_admin_user: siteAdmin,
        mongo_admin_pass: admin,
+       mongo_db_name: soc-db,
        mongo_root_user: siteRoot, 
        mongo_root_pass: root, 
        dockerfile_repository: "https://github.com/oudomsieng/mongodb-docker.git"
@@ -50,10 +51,11 @@
 - hosts: MONGODB_PRIMARY
   vars:
      mongo_container_name: mongo
+     mongo_db_name: soc-db,
      mongo_root_user: siteRoot
      mongo_root_pass: root
      node2_hostname: node2.mongo.sg
   tasks:
    - name: Add secondary node to replica set
-     command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval "rs.add('{{ node2_hostname }}')"
+     command: docker exec -d {{ mongo_container_name }} mongo {{ mongo_db_name }} -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval "rs.add('{{ node2_hostname }}')"
      become: yes

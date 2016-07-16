@@ -31,7 +31,7 @@
   become: yes
   
 - name: Add root user to mongo
-  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_root_user }}', pwd":" '{{ mongo_root_pass }}', roles":" [{role":" 'root', db":" 'admin'}]})"
+  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_root_user }}', pwd":" '{{ mongo_root_pass }}', roles":" [{role":" 'root', db":" '{{ mongo_db_name }}'}]})"
   become: yes
 
 - include: remove-mongo-container.yml
@@ -41,6 +41,6 @@
   become: yes
 
 - name: Initiate Replica set  
-  command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval "rs.initiate()"
+  command: docker exec -d {{ mongo_container_name }} mongo {{ mongo_db_name }} -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval "rs.initiate()"
   become: yes
   
