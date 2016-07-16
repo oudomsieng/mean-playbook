@@ -1,0 +1,8 @@
+---
+
+- name: Remove nodejs container
+  docker_container:
+    name: "{{ nodejs_container_name }}"
+    image: "{{ nodejs_image_name }}"
+    state: absent
+  become: yes

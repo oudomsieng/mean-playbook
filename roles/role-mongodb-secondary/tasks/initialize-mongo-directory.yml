@@ -1,3 +1,5 @@
+---
+
 - name: Checking if ansible_distribution_major_version and ansible_distribution are not defined
   fail:
     msg: "Ansible distribution or ansible distribution version are not defined"

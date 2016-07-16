@@ -1,0 +1,49 @@
+---
+
+- name: Checking if ansible_distribution_major_version and ansible_distribution are not defined
+  fail:
+    msg: "Ansible distribution or ansible distribution version are not defined"
+  when: ansible_distribution_major_version is not defined or ansible_distribution is not defined
+
+- name: Checking if target server is not CentOS 7
+  fail:
+    msg: "This role can only be run on CentOS 7 servers"
+  when: ansible_distribution != "CentOS" or (ansible_distribution == "CentOS" and ansible_distribution_major_version != "7")
+
+- name: test input vars
+  assert: { that: "{{ item }} is defined" }
+  with_items:
+      - nodejs_work_path
+      - soc_api_version
+      - dockerfile_repository
+  when: nodejs_deploy_config
+  
+- name: Create nodejs working diectory if not exist
+  file: 
+    path: "{{ nodejs_work_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+  
+- include: remove-nodejs-container.yml
+
+- include: rebuild-nodejs-container.yml
+  when: rebuild_docker_image
+
+- name: git checkout soc-api
+  git: 
+    repo: https://oudomsieng@bitbucket.org/soc-gen/soc-api.git
+    dest: "{{ nodejs_work_path }}/soc-api"
+    version: "{{ soc_api_version }}"
+
+- name: Install nodejs project dependencies
+  npm:
+    production: yes
+    path: "{{ nodejs_work_path }}/soc-api"
+
+- name: Run nodejs container
+  command: docker run --name {{ nodejs_container_name }} -v "{{ nodejs_work_path }}/soc-api":/usr/src/soc-api --hostname=\"{{ nodejs_api_hostname }}\" -p 8000:8000 -d {{ nodejs_image_name }}
+  become: yes
+  

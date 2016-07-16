@@ -1,2 +1,3 @@
 ---
 # defaults file for role-mongodb-primary
+rebuild_docker_image: true

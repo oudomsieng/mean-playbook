@@ -1,0 +1,5 @@
+---
+# vars file for role-nodejs-api
+nodejs_image_name: nodejs-api
+nodejs_container_name: nodejs-api
+nodejs_api_hostname: node1.mongo.sg

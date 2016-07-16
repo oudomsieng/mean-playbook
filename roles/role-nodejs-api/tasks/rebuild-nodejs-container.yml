@@ -1,0 +1,11 @@
+---
+
+- name: Remove image
+  docker_image:
+    state: absent
+    name: "{{ nodejs_image_name }}"
+  become: yes
+  
+- name: Build nodejs image
+  command: docker build -t {{ nodejs_image_name }} {{ dockerfile_repository }}
+  become: yes

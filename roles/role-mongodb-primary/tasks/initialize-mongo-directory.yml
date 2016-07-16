@@ -1,3 +1,5 @@
+---
+
 - name: Checking if ansible_distribution_major_version and ansible_distribution are not defined
   fail:
     msg: "Ansible distribution or ansible distribution version are not defined"
@@ -12,8 +14,10 @@
   assert: { that: "{{ item }} is defined" }
   with_items:
       - mongodb_work_path
+      - temporary_directory
       - mongo_admin_user
       - mongo_admin_pass
+      - mongo_db_name
       - mongo_root_user
       - mongo_root_pass
       - dockerfile_repository
@@ -53,4 +57,4 @@
     group: root
     state: directory
     mode: 0777
-  become: yes
+  become: yes 

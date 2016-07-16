@@ -1,0 +1,3 @@
+---
+# defaults file for role-nodejs-api
+rebuild_docker_image: true
