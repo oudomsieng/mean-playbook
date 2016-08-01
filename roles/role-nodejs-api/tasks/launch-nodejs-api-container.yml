@@ -20,8 +20,14 @@
       - mongodb_node1_ip_address
       - mongodb_node2_ip_address
   when: nodejs_deploy_config
-  
-- name: Create nodejs working diectory if not exist
+
+- name: Delete nodejs working diectory
+  file: 
+    path: "{{ nodejs_work_path }}"
+    state: absent
+  become: yes
+
+- name: Recreate nodejs working diectory
   file: 
     path: "{{ nodejs_work_path }}"
     owner: root
