@@ -3,3 +3,4 @@
 nodejs_image_name: nodejs-api
 nodejs_container_name: nodejs-api
 nodejs_api_hostname: node1.mongo.sg
+socapi_service_name: socapi

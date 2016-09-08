@@ -1,0 +1,11 @@
+[Unit]
+Description=High-performance api service
+
+[Service]
+Type=simple
+User=root
+ExecStart=node {{ nodejs_work_path }}/soc-api/index.js --logPath=/var/log/soc-api/
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

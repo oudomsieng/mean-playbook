@@ -3,7 +3,7 @@
 - hosts: MONGODB_PRIMARY
   roles:
    - { role: role-mongodb-primary,   
-       mongodb_work_path: /home/core,
+       mongodb_work_path: /home/core/mongo,
        mongodb_deploy_config: true,
        mongo_admin_user: siteAdmin,
        mongo_admin_pass: admin,
@@ -16,11 +16,8 @@
   roles:
    - { role: role-nodejs-api,
        nodejs_deploy_config: true,
-       rebuild_docker_image: false,
        nodejs_work_path: /home/core,
        soc_api_logpath: /var/log/soc-api,
-       mongodb_node1_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}", 
-       mongodb_node2_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}", 
-       soc_api_version: v1.1.2,
-       dockerfile_repository: "https://github.com/oudomsieng/soc-api-docker.git"
+       mongodb_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
+       soc_api_version: v1.1.2
 	 }

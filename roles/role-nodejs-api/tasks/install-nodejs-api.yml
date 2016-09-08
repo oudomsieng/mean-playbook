@@ -1,0 +1,104 @@
+---
+
+- name: Checking if ansible_distribution_major_version and ansible_distribution are not defined
+  fail:
+    msg: "Ansible distribution or ansible distribution version are not defined"
+  when: ansible_distribution_major_version is not defined or ansible_distribution is not defined
+
+- name: Checking if target server is not CentOS 7
+  fail:
+    msg: "This role can only be run on CentOS 7 servers"
+  when: ansible_distribution != "CentOS" or (ansible_distribution == "CentOS" and ansible_distribution_major_version != "7")
+
+- name: test input vars
+  assert: { that: "{{ item }} is defined" }
+  with_items:
+      - nodejs_work_path
+      - soc_api_version
+      - soc_api_logpath
+      - mongodb_ip_address
+  when: nodejs_deploy_config
+
+- name: Install curl
+  yum:
+    name: curl
+    state: present
+  become: yes
+  
+- name: Curl setup of nodejs
+  command: curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
+  
+- name: Install nodejs
+  yum:
+    name: nodejs
+    state: present
+  become: yes
+
+- name: Set environment variable for nodejs
+  shell: "echo $NODE_ENV"
+    environment:
+      NODE_ENV: production
+
+- name: Configuring socapi.service in systemd/system
+  template:
+    src: socapi.service.j2
+    dest: /lib/systemd/system/socapi.service
+  become: yes
+
+- name: Reload systemd
+  become: yes
+  command: systemctl daemon-reload
+  
+- name: Stop nodejs api
+  service: 
+    name: "{{ socapi_service_name }}"
+    state: stopped 
+    enabled: yes
+  become: yes
+
+- name: Delete nodejs working diectory
+  file: 
+    path: "{{ nodejs_work_path }}/soc-api"
+    state: absent
+  become: yes
+  
+- name: Create nodejs working diectory if not exist
+  file: 
+    path: "{{ nodejs_work_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+  
+- name: Create nodejs logging diectory if not exist
+  file: 
+    path: "{{ soc_api_logpath }}"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: git checkout soc-api
+  git: 
+    repo: https://oudomsieng@bitbucket.org/soc-gen/soc-api.git
+    dest: "{{ nodejs_work_path }}/soc-api"
+    version: "{{ soc_api_version }}"
+
+- name: infrastructure config for app
+  template:
+    src: infra-prod.json.j2
+    dest: "{{ nodejs_work_path }}/soc-api/config/infra-prod.json"
+
+- name: Install nodejs project dependencies
+  npm:
+    production: yes
+    path: "{{ nodejs_work_path }}/soc-api"
+
+- name: Start nodejs api
+  service: 
+    name: "{{ socapi_service_name }}"
+    state: started 
+    enabled: yes
+  become: yes
