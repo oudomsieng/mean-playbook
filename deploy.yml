@@ -2,8 +2,7 @@
 
 - hosts: MONGODB_PRIMARY
   roles:
-   - { role: role-mongodb-primary,
-       rebuild_docker_image: false,   
+   - { role: role-mongodb-primary,   
        mongodb_work_path: /home/core,
        mongodb_deploy_config: true,
        mongo_admin_user: siteAdmin,
