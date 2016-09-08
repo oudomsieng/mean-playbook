@@ -9,9 +9,9 @@
        mongo_admin_pass: admin,
        mongo_db_name: soc-db,
        mongo_root_user: siteRoot, 
-       mongo_root_pass: root,
+       mongo_root_pass: root
      }
- 
+
 - hosts: NODEJS_API
   roles:
    - { role: role-nodejs-api,
@@ -20,4 +20,4 @@
        soc_api_logpath: /var/log/soc-api,
        mongodb_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
        soc_api_version: v1.1.2
-	 }
+     }
