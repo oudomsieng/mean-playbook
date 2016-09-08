@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 Type=simple
-User=mongodb
+User=mongod
+Group=mongod
 ExecStart=/usr/bin/mongod --config /etc/mongod.conf
-Restart=always
 
 [Install]
 WantedBy=multi-user.target
