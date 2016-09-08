@@ -1,0 +1,76 @@
+---
+
+- hosts: LOCAL
+  connection: local
+  tasks:   
+   - name: Create temporary diectory
+     file: 
+       path: "/home/{{ groups['MONGODB_PRIMARY'][0] }}"
+       owner: root
+       group: root
+       state: directory
+       mode: 0777
+     become: yes 
+
+- hosts: MONGODB_PRIMARY
+  roles:
+   - { role: role-mongodb-primary,
+       rebuild_docker_image: false,   
+       mongodb_work_path: /home/core,
+       temporary_directory: "/home/{{ groups['MONGODB_PRIMARY'][0] }}", 
+       mongodb_node1_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}", 
+       mongodb_node2_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}", 
+       mongodb_deploy_config: true,
+       mongo_admin_user: siteAdmin,
+       mongo_admin_pass: admin,
+       mongo_db_name: soc-db,
+       mongo_root_user: siteRoot, 
+       mongo_root_pass: root, 
+       dockerfile_repository: "https://github.com/oudomsieng/mongodb-docker.git"
+     }
+
+- hosts: MONGODB_SECONDARY
+  roles:
+   - { role: role-mongodb-secondary,
+       rebuild_docker_image: false,
+       mongodb_work_path: /home/core,
+       temporary_directory: "/home/{{ groups['MONGODB_PRIMARY'][0] }}", 
+       mongodb_node1_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}", 
+       mongodb_node2_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}", 
+       mongodb_deploy_config: true, 
+       dockerfile_repository: "https://github.com/oudomsieng/mongodb-docker.git"
+     }
+
+- hosts: LOCAL
+  connection: local
+  tasks:
+   - name: Delete temporary direcoty
+     file:
+       path: "/home/{{ groups['MONGODB_PRIMARY'][0] }}"
+       state: absent
+     become: yes
+
+- hosts: MONGODB_PRIMARY
+  vars:
+     mongo_container_name: mongo
+     mongo_db_name: soc-db
+     mongo_root_user: siteRoot
+     mongo_root_pass: root
+     node2_hostname: node2.mongo.sg
+  tasks:
+   - name: Add secondary node to replica set
+     command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval "rs.add('{{ node2_hostname }}')"
+     become: yes
+ 
+- hosts: NODEJS_API
+  roles:
+   - { role: role-nodejs-api,
+       nodejs_deploy_config: true,
+       rebuild_docker_image: false,
+       nodejs_work_path: /home/core,
+       soc_api_logpath: /var/log/soc-api,
+       mongodb_node1_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}", 
+       mongodb_node2_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}", 
+       soc_api_version: v1.1.2,
+       dockerfile_repository: "https://github.com/oudomsieng/soc-api-docker.git"
+	 }

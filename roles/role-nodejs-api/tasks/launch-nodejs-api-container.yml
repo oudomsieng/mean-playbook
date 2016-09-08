@@ -21,6 +21,8 @@
       - mongodb_node2_ip_address
   when: nodejs_deploy_config
 
+- include: remove-nodejs-container.yml
+  
 - name: Delete nodejs working diectory
   file: 
     path: "{{ nodejs_work_path }}"
@@ -35,7 +37,7 @@
     state: directory
     mode: 0777
   become: yes
-  
+
 - name: Create nodejs logging diectory if not exist
   file: 
     path: "{{ soc_api_logpath }}"
@@ -44,8 +46,6 @@
     state: directory
     mode: 0777
   become: yes
-  
-- include: remove-nodejs-container.yml
 
 - include: rebuild-nodejs-container.yml
   when: rebuild_docker_image

@@ -1,0 +1,108 @@
+---
+
+- name: Checking if ansible_distribution_major_version and ansible_distribution are not defined
+  fail:
+    msg: "Ansible distribution or ansible distribution version are not defined"
+  when: ansible_distribution_major_version is not defined or ansible_distribution is not defined
+
+- name: Checking if target server is not CentOS 7
+  fail:
+    msg: "This role can only be run on CentOS 7 servers"
+  when: ansible_distribution != "CentOS" or (ansible_distribution == "CentOS" and ansible_distribution_major_version != "7")
+
+- name: test input vars
+  assert: { that: "{{ item }} is defined" }
+  with_items:
+      - mongodb_work_path
+      - mongo_admin_user
+      - mongo_admin_pass
+      - mongo_db_name
+      - mongo_root_user
+      - mongo_root_pass
+  when: mongodb_deploy_config
+
+- name: Create mongo working diectory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: Create mongo-data directory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}/data"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: Create mongo-log directory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}/log"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: Importing the Mongodb public GPG key into rpm
+  rpm_key:
+    state: absent
+    key: "{{ mongodb_rpm_key }}"
+  become: yes
+
+- name: Creating a new yum repository file for Mongodb
+  template: 
+    src: mongodb.repo.j2
+    dest: "/etc/yum.repos.d/{{ mongodb_repo_name }}"
+  become: yes
+
+- name: Installing Mongodb pkg from repo
+  yum: 
+    name: "{{ mongodb_pkg_name }}"
+    state: present
+  become: yes
+
+- name: Configuring mongod in etc
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+  become: yes
+
+- name: Configuring mongodb.service in systemd/system
+  template:
+    src: mongodb.service.j2
+    dest: /lib/systemd/system/mongodb.service
+  become: yes
+
+- name: Reload systemd
+  become: yes
+  command: systemctl daemon-reload
+
+- name: Logrotate log file
+  template:
+    src: logrotate.mongodb.j2
+    dest: /etc/logrotate.d/mongodb
+  become: yes
+
+- name: Restarted mongodb
+  service: 
+    name: "{{ mongodb_service_name }}"
+    state: restarted 
+    enabled: yes
+  become: yes
+  
+- name: Add admin user to mongo
+  command: mongo admin --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_admin_user }}', pwd":" '{{ mongo_admin_pass }}', roles":" [{role":" 'userAdminAnyDatabase', db":" 'admin'}]})"
+  become: yes
+  
+- name: Add root user to mongo
+  command: mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('admin').runCommand({createUser":" '{{ mongo_root_user }}', pwd":" '{{ mongo_root_pass }}', roles":" [{role":" 'root', db":" 'admin'}]})"
+  become: yes
+  
+- name: Add dbadmin to db
+  command: mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('soc-db').runCommand({createUser":" '{{ mongo_admin_user }}', pwd":" '{{ mongo_admin_pass }}', roles":" [{role":" 'dbOwner', db":" '{{ mongo_db_name }}'}]})"
+  become: yes
