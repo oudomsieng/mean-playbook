@@ -12,27 +12,6 @@
        mongo_root_user: siteRoot, 
        mongo_root_pass: root,
      }
-
-- hosts: LOCAL
-  connection: local
-  tasks:
-   - name: Delete temporary direcoty
-     file:
-       path: "/home/{{ groups['MONGODB_PRIMARY'][0] }}"
-       state: absent
-     become: yes
-
-- hosts: MONGODB_PRIMARY
-  vars:
-     mongo_container_name: mongo
-     mongo_db_name: soc-db
-     mongo_root_user: siteRoot
-     mongo_root_pass: root
-     node2_hostname: node2.mongo.sg
-  tasks:
-   - name: Add secondary node to replica set
-     command: docker exec -d {{ mongo_container_name }} mongo admin -u {{ mongo_root_user }} -p {{ mongo_root_pass }} --eval "rs.add('{{ node2_hostname }}')"
-     become: yes
  
 - hosts: NODEJS_API
   roles:
