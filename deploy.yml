@@ -12,24 +12,24 @@
        # mongo_root_pass: root
      # }
 
-#- hosts: NODEJS_API
-#  roles:
-#   - { role: role-nodejs-api,
-#       nodejs_deploy_config: true,
-#       nodejs_work_path: /home/core,
-#       soc_api_logpath: /home/core/soc-api-log,
-#       mongodb_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
-#       soc_api_version: v1.2.1,
-#       angular_ihm_domain: "{{ groups['ANGULAR_IHM'][0] }}",
-#       angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}"
-#     }
+- hosts: NODEJS_API
+  roles:
+  - { role: role-nodejs-api,
+      nodejs_deploy_config: true,
+      nodejs_work_path: /home/core,
+      soc_api_logpath: /home/core/soc-api-log,
+      mongodb_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
+      soc_api_version: v1.2.1,
+      angular_ihm_domain: "{{ groups['ANGULAR_IHM'][0] }}",
+      angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}"
+    }
 
 - hosts: ANGULAR_IHM
   roles:
    - { role: role-soc-ihm, 
        nginx_log_path: /var/log/nginxlogs, 
        application_directory: /usr/share/nginx,
-       soc_ihm_version: v2.0.0,
+       soc_ihm_version: v2.0.2,
        mongodbprimary_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
        mongodbsecondary_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}",
        nodejs_api_ip:  "{{ groups['NODEJS_API'][0] }}",
