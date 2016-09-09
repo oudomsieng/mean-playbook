@@ -20,6 +20,12 @@
       - angular_ihm_domain
       - angular_ihm_ip
   when: nodejs_deploy_config
+
+- name: Configuring nodejs repo
+  template:
+    src: nodesource-el.repo.j2
+    dest: /etc/yum.repos.d/nodesource-el.repo
+  become: yes
   
 - name: Install nodejs
   yum:
