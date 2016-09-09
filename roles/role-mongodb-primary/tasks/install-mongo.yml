@@ -21,33 +21,6 @@
       - mongo_root_pass
   when: mongodb_deploy_config
 
-- name: Create mongo working diectory if not exist
-  file: 
-    path: "{{ mongodb_work_path }}"
-    owner: root
-    group: root
-    state: directory
-    mode: 0777
-  become: yes
-
-- name: Create mongo-data directory if not exist
-  file: 
-    path: "{{ mongodb_work_path }}/data"
-    owner: root
-    group: root
-    state: directory
-    mode: 0777
-  become: yes
-
-- name: Create mongo-log directory if not exist
-  file: 
-    path: "{{ mongodb_work_path }}/log"
-    owner: root
-    group: root
-    state: directory
-    mode: 0777
-  become: yes
-
 - name: Importing the Mongodb public GPG key into rpm
   rpm_key:
     state: absent
@@ -66,10 +39,34 @@
     state: present
   become: yes
 
+- name: Create mongo working diectory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}"
+    owner: mongod
+    group: mongod
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Create mongo-log directory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}/log"
+    owner: mongod
+    group: mongod
+    state: directory
+    mode: 0755
+  become: yes
+  
 - name: Configuring mongod in etc
   template:
     src: mongod.conf.j2
     dest: /etc/mongod.conf
+  become: yes
+  
+- name: Configuring mongodb service
+  template:
+    src: mongodb.service.j2
+    dest: /etc/systemd/system/mongodb.service
   become: yes
 
 - name: Reload systemd

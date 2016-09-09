@@ -1,12 +1,12 @@
 [Unit]
-Description=High-performance, schema-free document-oriented database
-After=network.target
+Description=Mongo is a scalable, document-oriented database.
+After=syslog.target network.target
 
 [Service]
-Type=simple
+Type=forking
 User=mongod
 Group=mongod
-ExecStart=/usr/bin/mongod --config /etc/mongod.conf
+ExecStart=/usr/bin/mongod --quiet -f /etc/mongod.conf run
 
 [Install]
 WantedBy=multi-user.target
