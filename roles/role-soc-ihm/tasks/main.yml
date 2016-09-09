@@ -89,7 +89,7 @@
     src: nodesource-el.repo.j2
     dest: /etc/yum.repos.d/nodesource-el.repo
   become: yes
-	
+
 - name: Installing nodejs
   yum:
     name: nodejs
