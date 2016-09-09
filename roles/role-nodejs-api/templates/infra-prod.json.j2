@@ -12,12 +12,34 @@
       ]
     }
   },
+  "soc-ihm": {
+    "domain-name": "http://{{ angular_ihm_domain }}"
+  },
   "soc-api": {
     "host": "localhost",
     "bind": "0.0.0.0",
     "port": 8000,
     "cors": {
-      "origin": []
+      "origin": ["http://{{ angular_ihm_ip }}:80"]
+    },
+    "admins": [
+      {
+        "email": "mickael.a.azema@socgen.com",
+        "username": "mickael.azema",
+        "firstName": "Mickael",
+        "lastName": "Azema",
+        "isAdmin": true
+      }
+    ],
+    "smtp-auth": {
+      "pool": true,
+      "host": "smtp.gmail.com",
+      "port": 465,
+      "secure": true,
+      "auth": {
+        "user": "samtransworder@gmail.com",
+        "pass": "Supinfo01!"
+      }
     }
   }
 }
