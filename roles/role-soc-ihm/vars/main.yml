@@ -7,7 +7,7 @@ epel_pkg_name: epel-release
 nginx_pkg_name: nginx
 fileconf_path: /etc/nginx/nginx.conf
 fileservice_path: /lib/systemd/system/nginx.service
-application_path: /application/soc-ihm
+directory_app_work_path: /usr/share/appbuild_ihm
 directory_application_path: /usr/share/nginx/
 application_port: 3000
 application_dist_path: /usr/share/nginx/soc-ihm/dist

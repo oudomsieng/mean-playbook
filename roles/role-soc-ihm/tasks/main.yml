@@ -15,6 +15,11 @@
   with_items:
       - nginx_log_path
       - application_directory
+      - soc_ihm_version
+      - mongodbprimary_ip_address
+      - mongodbsecondary_ip_address
+      - nodejs_api_ip
+      - angular_ihm_ip
   when: nginx_deploy_config
 
 - name: Adding CentOS EPEL repository
@@ -58,10 +63,64 @@
     dest: /etc/logrotate.d/nginx
   become: yes
 
-- name: Pushing application
-  copy:
-    src: soc-ihm
-    dest: "{{application_directory}}"
+- name: Delete working directory
+  file:
+    path: "{{directory_app_work_path }}"
+    state: absent
+  become: yes
+
+- name: Creating working directory to build app
+  file:
+    path: "{{directory_app_work_path }}"
+    owner: root
+    group: root
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: git cloning app
+  git:
+    repo: https://VLE20@bitbucket.org/soc-gen/soc-ihm.git
+    dest: "{{directory_app_work_path}}/soc-ihm"
+    version: "{{soc_ihm_version}}"
+
+- name: Installing nodejs
+  yum:
+    name: nodejs
+    state: present
+  become: yes
+
+- name: Configuring Infrastructure for app
+  template:
+    src: infra.ts.j2
+    dest: "{{directory_app_work_path }}/soc-ihm/app/config/infra.ts"
+
+- name: Installing npm modules to build app
+  npm:
+    path: "{{directory_app_work_path }}/soc-ihm"
+
+- name: Going to working directory and building app
+  command: npm run build_prod
+  args:
+    chdir: "{{directory_app_work_path }}/soc-ihm"
+
+- name: Creating working directory to build app
+  file:
+    path: "{{directory_application_path }}/soc-ihm"
+    owner: root
+    group: root
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Moving builded app into nginx directory
+  command: "cp -R {{directory_app_work_path}}/soc-ihm/dist {{directory_application_path}}/soc-ihm"
+  become: yes
+
+- name: Cleaning app source code
+  file:
+    path: "{{directory_app_work_path}}"
+    state: absent
   become: yes
 
 - name: Starting Nginx service
