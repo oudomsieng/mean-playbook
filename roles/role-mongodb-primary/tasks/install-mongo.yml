@@ -51,7 +51,7 @@
 - name: Importing the Mongodb public GPG key into rpm
   rpm_key:
     state: absent
-    key: "{{ mongodb_rpm_key }}"
+    key: "{{ mongodb_gpg_key }}"
   become: yes
 
 - name: Creating a new yum repository file for Mongodb
@@ -70,12 +70,6 @@
   template:
     src: mongod.conf.j2
     dest: /etc/mongod.conf
-  become: yes
-
-- name: Configuring mongodb.service in systemd/system
-  template:
-    src: mongodb.service.j2
-    dest: /lib/systemd/system/mongodb.service
   become: yes
 
 - name: Reload systemd

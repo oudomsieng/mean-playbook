@@ -4,7 +4,7 @@ mongo_image_name: mongo
 mongo_container_name: mongo
 node1_hostname: node1.mongo.sg
 node2_hostname: node2.mongo.sg
-mongodb_rpm_key: http://packages.elastic.co/GPG-KEY-elasticsearch
+mongodb_gpg_key: https://www.mongodb.org/static/pgp/server-3.2.asc
 mongodb_repo_name: mongodb-org-3.2.repo
 mongodb_pkg_name: mongodb-org
-mongodb_service_name: mongodb
+mongodb_service_name: mongod

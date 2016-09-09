@@ -18,26 +18,12 @@
       - soc_api_logpath
       - mongodb_ip_address
   when: nodejs_deploy_config
-
-- name: Install curl
-  yum:
-    name: curl
-    state: present
-  become: yes
-  
-- name: Curl setup of nodejs
-  command: curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
   
 - name: Install nodejs
   yum:
     name: nodejs
     state: present
   become: yes
-
-- name: Set environment variable for nodejs
-  shell: "echo $NODE_ENV"
-    environment:
-      NODE_ENV: production
 
 - name: Configuring socapi.service in systemd/system
   template:
@@ -99,6 +85,6 @@
 - name: Start nodejs api
   service: 
     name: "{{ socapi_service_name }}"
-    state: started 
+    state: restarted
     enabled: yes
   become: yes
