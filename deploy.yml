@@ -23,3 +23,11 @@
        angular_ihm_domain: "{{ groups['ANGULAR_IHM'][0] }}",
        angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}"
      }
+
+- hosts: ANGULAR_IHM
+  roles:
+   - { role: role-soc-ihm, 
+       nginx_log_path: /usr/testlog, 
+       application_directory: /usr/share/nginx, 
+       nginx_deploy_config: true 
+     }
