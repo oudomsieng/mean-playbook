@@ -21,6 +21,8 @@
       - angular_ihm_ip
   when: nodejs_deploy_config
 
+- include: create-volume.yml
+
 - name: Importing the Nodejs public GPG key into rpm
   rpm_key:
     state: absent

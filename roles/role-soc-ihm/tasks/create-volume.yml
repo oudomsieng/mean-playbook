@@ -1,0 +1,47 @@
+---
+
+- name: Testing input vars
+  assert: { that: "{{ item }} is defined" }
+  with_items:
+     - vg_name
+     -  pv_list
+     -  lv_name
+     -  lv_size
+     -  lv_fs 
+  when: lv_deploy
+
+- name: Creating VG if not exists
+  lvg:
+    vg: "{{vg_name}}"
+    pvs: "{{pv_list}}"
+  ignore_errors: yes
+  become: yes
+
+- name: Creating LV if not exists
+  lvol:
+    vg: "{{vg_name}}"
+    lv: "{{lv_name}}"
+    size: "{{lv_size}}"
+  ignore_errors: yes	
+  become: yes 
+
+- name: Creating filesystem for lv
+  filesystem:
+    dev: "/dev/{{vg_name}}/{{lv_name}}"
+    fstype: "{{lv_fs}}"
+  become: yes
+
+- name: Creating applis directory
+  file:
+    path: "{{application_directory}}"
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Mounting filesystem
+  mount:
+    src: "/dev/{{vg_name}}/{{lv_name}}"
+    name: "{{application_directory}}"
+    fstype: "{{lv_fs}}"
+    state: mounted
+  become: yes
