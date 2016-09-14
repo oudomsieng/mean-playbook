@@ -23,3 +23,16 @@
        angular_ihm_domain: "{{ groups['ANGULAR_IHM'][0] }}",
        angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}"
      }
+
+- hosts: ANGULAR_IHM
+  roles:
+   - { role: role-soc-ihm, 
+       nginx_log_path: /var/log/nginxlogs, 
+       application_directory: /usr/share/nginx,
+       soc_ihm_version: v2.0.0,
+       mongodbprimary_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
+       mongodbsecondary_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}",
+       nodejs_api_ip:  "{{ groups['NODEJS_API'][0] }}",
+       angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}",  
+       nginx_deploy_config: true 
+     }

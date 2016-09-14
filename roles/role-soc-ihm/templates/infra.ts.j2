@@ -1,0 +1,30 @@
+const infra = {
+  'soc-storage': {
+    'mongodb': {
+      'database': 'soc-db',
+      'username': 'siteAdmin',
+      'password': 'admin',
+      'hosts': [
+        {
+          'host': '{{mongodbprimary_ip_address}}',
+          'port': 27017
+        },
+        {
+          'host': '{{mongodbsecondary_ip_address}}',
+          'port': 27017
+        }
+      ]
+    }
+  },
+  'soc-api': {
+    'host': '{{nodejs_api_ip}}',
+    'bind': '0.0.0.0',
+    'port': 8000,
+    'cors': {
+      'origin': ['{{angular_ihm_ip}}']
+    }
+  }
+};
+
+export { infra };
+
