@@ -57,6 +57,15 @@
     mode: 0755
   become: yes
   
+- name: Create mongo-run directory if not exist
+  file: 
+    path: /var/run/mongodb
+    owner: mongod
+    group: mongod
+    state: directory
+    mode: 0755
+  become: yes
+  
 - name: Configuring mongod in etc
   template:
     src: mongod.conf.j2
