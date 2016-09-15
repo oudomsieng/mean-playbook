@@ -21,6 +21,12 @@
       - angular_ihm_ip
   when: nodejs_deploy_config
 
+- name: Importing the Nodejs public GPG key into rpm
+  rpm_key:
+    state: absent
+    key: "{{ nodejs_gpg_key }}"
+  become: yes
+  
 - name: Configuring nodejs repo
   template:
     src: nodesource-el.repo.j2

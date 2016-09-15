@@ -7,11 +7,11 @@
 systemLog:
   destination: file
   logAppend: true
-  path: /var/log/mongodb/mongod.log
+  path: {{ mongodb_work_path }}/log/mongod.log
 
 # Where and how to store data.
 storage:
-  dbPath: /var/lib/mongo
+  dbPath: {{ mongodb_work_path }}/data
   journal:
     enabled: true
 #  engine:

@@ -39,6 +39,12 @@
     state: present
   become: yes
 
+- name: Set selinux permission
+  selinux_permissive: 
+    domain: mongod_t
+    permissive: true
+  become: yes
+ 
 - name: Create mongo working diectory if not exist
   file: 
     path: "{{ mongodb_work_path }}"
@@ -51,6 +57,15 @@
 - name: Create mongo-log directory if not exist
   file: 
     path: "{{ mongodb_work_path }}/log"
+    owner: mongod
+    group: mongod
+    state: directory
+    mode: 0755
+  become: yes
+  
+- name: Create mongo-data directory if not exist
+  file: 
+    path: "{{ mongodb_work_path }}/data"
     owner: mongod
     group: mongod
     state: directory

@@ -3,4 +3,6 @@
 nodejs_image_name: nodejs-api
 nodejs_container_name: nodejs-api
 nodejs_api_hostname: node1.mongo.sg
+nodejs_gpg_key: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
 socapi_service_name: socapi
+
