@@ -39,7 +39,7 @@ http {
         listen       {{application_port}} default_server;
         listen       [::]:{{application_port}} default_server;
         server_name  _;
-        root         {{application_directory}}/soc-ihm/dist;
+        root         {{application_directory}}/ihm;
 
         # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;

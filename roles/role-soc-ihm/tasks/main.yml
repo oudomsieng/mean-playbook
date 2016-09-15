@@ -77,15 +77,15 @@
     dest: /etc/logrotate.d/nginx
   become: yes
 
-- name: Delete working directory
+- name: Delete app directory content
   file:
-    path: "{{application_dist_path }}"
+    path: "{{application_directory }}/ihm"
     state: absent
   become: yes
 
-- name: Creating working directory to build app
+- name: Creating ihm directory
   file:
-    path: "{{application_dist_path }}"
+    path: "{{application_directory }}/ihm"
     owner: root
     group: root
     state: directory
@@ -95,19 +95,19 @@
 - name: download ihm
   get_url:
     url: {{ ihm_nexus_url }}
-    dest: "{{ application_dist_path }}/ihm.zip"
+    dest: "{{ application_directory }}/ihm.zip"
     mode: 0777
 
 - name: unzip ihm
   unarchive:
-    src: "{{ application_dist_path }}/ihm.zip"
-    dest: {{ application_dist_path }}
+    src: "{{ application_directory }}/ihm.zip"
+    dest: {{ application_directory }}/ihm
     remote_src: yes
 
 - name: Configuring Infrastructure for app
   template:
     src: "{{ infra_filename }}.j2"
-    dest: "{{application_dist_path }}/infra.js"
+    dest: "{{application_directory }}/ihm/infra.js"
 
 - name: Starting Nginx service
   service:
