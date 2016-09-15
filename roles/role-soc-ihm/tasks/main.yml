@@ -103,7 +103,9 @@
 
 - name: Installing npm modules to build app
   npm:
+    production: yes
     path: "{{directory_app_work_path }}/soc-ihm"
+  become: yes
 
 - name: Going to working directory and building app
   command: npm run build_prod
