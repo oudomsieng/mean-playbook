@@ -1,7 +1,7 @@
 {
-  "soc-storage": {
+  "satisfaction-storage": {
     "mongodb": {
-      "database": "soc-db",
+      "database": "satisfaction-storage",
       "username": "siteAdmin",
       "password": "admin",
       "hosts": [
@@ -12,10 +12,7 @@
       ]
     }
   },
-  "soc-ihm": {
-    "domain-name": "http://{{ angular_ihm_domain }}"
-  },
-  "soc-api": {
+  "satisfaction-api": {
     "host": "localhost",
     "bind": "0.0.0.0",
     "port": 8000,
@@ -25,21 +22,12 @@
     "admins": [
       {
         "email": "samtransworder@gmail.com",
+		"password": "test",
         "username": "samy",
         "firstName": "sam",
         "lastName": "worder",
         "isAdmin": true
       }
-    ],
-    "smtp-auth": {
-      "pool": true,
-      "host": "smtp.gmail.com",
-      "port": 465,
-      "secure": true,
-      "auth": {
-        "user": "samtransworder@gmail.com",
-        "pass": "Supinfo01!"
-      }
-    }
+    ]
   }
 }

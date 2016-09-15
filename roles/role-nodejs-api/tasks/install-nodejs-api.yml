@@ -13,12 +13,14 @@
 - name: test input vars
   assert: { that: "{{ item }} is defined" }
   with_items:
-      - nodejs_work_path
-      - soc_api_version
-      - soc_api_logpath
+      - api_work_path
+      - api_nexus_url
+      - api_logpath
       - mongodb_ip_address
       - angular_ihm_domain
       - angular_ihm_ip
+      - api_service_name
+      - infra_filename
   when: nodejs_deploy_config
 
 - include: create-volume.yml
@@ -41,10 +43,10 @@
     state: present
   become: yes
 
-- name: Configuring socapi.service in systemd/system
+- name: Configuring api.service in systemd/system
   template:
-    src: socapi.service.j2
-    dest: /lib/systemd/system/socapi.service
+    src: api.service.j2
+    dest: "/lib/systemd/system/{{ api_service_name }}.service"
   become: yes
 
 - name: Reload systemd
@@ -53,20 +55,20 @@
   
 - name: Stop nodejs api
   service: 
-    name: "{{ socapi_service_name }}"
+    name: "{{ api_service_name }}"
     state: stopped 
     enabled: yes
   become: yes
 
 - name: Delete nodejs working diectory
   file: 
-    path: "{{ nodejs_work_path }}/soc-api"
+    path: "{{ api_work_path }}"
     state: absent
   become: yes
   
 - name: Create nodejs working diectory if not exist
   file: 
-    path: "{{ nodejs_work_path }}"
+    path: "{{ api_work_path }}"
     owner: root
     group: root
     state: directory
@@ -75,32 +77,38 @@
   
 - name: Create nodejs logging diectory if not exist
   file: 
-    path: "{{ soc_api_logpath }}"
+    path: "{{ api_logpath }}"
     owner: root
     group: root
     state: directory
     mode: 0777
   become: yes
 
-- name: git checkout soc-api
-  git: 
-    repo: https://oudomsieng@bitbucket.org/soc-gen/soc-api.git
-    dest: "{{ nodejs_work_path }}/soc-api"
-    version: "{{ soc_api_version }}"
+- name: download api
+  get_url:
+    url: {{ api_nexus_url }}
+    dest: "{{ api_work_path }}/api.zip"
+    mode: 0777
+
+- name: unzip api
+  unarchive:
+    src: "{{ api_work_path }}/api.zip"
+    dest: {{ api_work_path }}
+    remote_src: yes
 
 - name: infrastructure config for app
   template:
-    src: infra-prod.json.j2
-    dest: "{{ nodejs_work_path }}/soc-api/config/infra-prod.json"
+    src: "{{ infra_filename }}.j2"
+    dest: "{{ api_work_path }}/config/infra-prod.json"
 
 - name: Install nodejs project dependencies
   npm:
     production: yes
-    path: "{{ nodejs_work_path }}/soc-api"
+    path: "{{ api_work_path }}"
 
 - name: Start nodejs api
   service: 
-    name: "{{ socapi_service_name }}"
+    name: "{{ api_service_name }}"
     state: started
     enabled: yes
   become: yes

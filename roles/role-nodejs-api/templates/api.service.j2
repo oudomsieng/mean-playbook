@@ -4,7 +4,7 @@ Description=High-performance api service
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/node {{ nodejs_work_path }}/soc-api/index.js --environment=production --logPath={{ soc_api_logpath }}/
+ExecStart=/usr/bin/node {{ api_work_path }}/index.js --environment=production --logPath={{ api_logpath }}/
 Restart=always
 
 [Install]

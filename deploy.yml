@@ -7,7 +7,7 @@
        mongodb_deploy_config: true,
        mongo_admin_user: siteAdmin,
        mongo_admin_pass: admin,
-       mongo_db_name: soc-db,
+       mongo_db_name: satisfaction-storage,
        mongo_root_user: siteRoot, 
        mongo_root_pass: root
      }
@@ -22,10 +22,12 @@
       lv_fs: ext4,
       lv_deploy: true
       nodejs_deploy_config: true,
-      nodejs_work_path: /home/core,
-      soc_api_logpath: /home/core/soc-api-log,
+      api_work_path: /home/core/satisfaction-api,
+      api_logpath: /home/core/satisfaction-api-log,
+      api_service_name: satisfactionApi
       mongodb_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
-      soc_api_version: v1.2.2,
+      api_nexus_url: https://nexusurlhere.com,
+      infra_filename: infra-satisfaction.json,
       angular_ihm_domain: "{{ groups['ANGULAR_IHM'][0] }}",
       angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}"
     }
@@ -40,12 +42,13 @@
        lv_fs: ext4, 
        nginx_log_path: /var/log/nginxlogs, 
        application_directory: /applis,
-       soc_ihm_version: v2.0.2,
+       ihm_nexus_url: https://nexusurlhere.com,
+       infra_filename: infra-satisfaction.js
        mongodbprimary_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
        mongodbsecondary_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}",
        nodejs_api_ip:  "{{ groups['NODEJS_API'][0] }}",
        angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}",  
        nginx_deploy_config: true,
-       lv_deploy: true	   
+       lv_deploy: true
      }
 
