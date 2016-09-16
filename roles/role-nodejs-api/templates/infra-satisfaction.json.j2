@@ -15,7 +15,7 @@
   "satisfaction-api": {
     "host": "localhost",
     "bind": "0.0.0.0",
-    "port": 8000,
+    "port": {{ nodejs_api_port }},
     "cors": {
       "origin": ["http://{{ angular_ihm_ip }}"]
     },

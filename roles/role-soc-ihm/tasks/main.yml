@@ -94,14 +94,14 @@
 
 - name: download ihm
   get_url:
-    url: {{ ihm_nexus_url }}
+    url: "{{ ihm_nexus_url }}"
     dest: "{{ application_directory }}/ihm.zip"
     mode: 0777
 
 - name: unzip ihm
   unarchive:
     src: "{{ application_directory }}/ihm.zip"
-    dest: {{ application_directory }}/ihm
+    dest: "{{ application_directory }}/ihm"
     remote_src: yes
 
 - name: Configuring Infrastructure for app

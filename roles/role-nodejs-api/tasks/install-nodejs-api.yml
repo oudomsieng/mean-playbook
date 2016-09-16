@@ -20,6 +20,7 @@
       - angular_ihm_domain
       - angular_ihm_ip
       - api_service_name
+      - nodejs_api_port
       - infra_filename
   when: nodejs_deploy_config
 
@@ -86,14 +87,14 @@
 
 - name: download api
   get_url:
-    url: {{ api_nexus_url }}
+    url: "{{ api_nexus_url }}"
     dest: "{{ api_work_path }}/api.zip"
     mode: 0777
 
 - name: unzip api
   unarchive:
     src: "{{ api_work_path }}/api.zip"
-    dest: {{ api_work_path }}
+    dest: "{{ api_work_path }}"
     remote_src: yes
 
 - name: infrastructure config for app
