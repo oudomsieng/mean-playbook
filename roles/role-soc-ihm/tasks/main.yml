@@ -22,118 +22,120 @@
       - angular_ihm_ip
   when: nginx_deploy_config
 
-- name: Adding CentOS EPEL repository
-  yum:
-    name: "{{epel_pkg_name}}"
-    state: present
-  become: yes
+- include: create-volume.yml
 
-- name: Installing Nginx
-  yum:
-    name: "{{nginx_pkg_name}}"
-    state: present
-  become: yes
+# - name: Adding CentOS EPEL repository
+  # yum:
+    # name: "{{epel_pkg_name}}"
+    # state: present
+  # become: yes
 
-- name: Configuring Nginx
-  template:
-    src: nginx.conf.j2
-    dest: "{{fileconf_path}}"
-  become: yes
+# - name: Installing Nginx
+  # yum:
+    # name: "{{nginx_pkg_name}}"
+    # state: present
+  # become: yes
 
-- name: Create log path if not exist
-  file:
-    path: "{{nginx_log_path }}"
-    state: directory
-    mode: 755
-  become: yes
+# - name: Configuring Nginx
+  # template:
+    # src: nginx.conf.j2
+    # dest: "{{fileconf_path}}"
+  # become: yes
 
-- name: Configuring Nginx service
-  template:
-    src: nginx.service.j2
-    dest: "{{fileservice_path}}"
-  become: yes
+# - name: Create log path if not exist
+  # file:
+    # path: "{{nginx_log_path }}"
+    # state: directory
+    # mode: 755
+  # become: yes
 
-- name: Reloading systemctl
-  command: systemctl daemon-reload
-  become: yes
+# - name: Configuring Nginx service
+  # template:
+    # src: nginx.service.j2
+    # dest: "{{fileservice_path}}"
+  # become: yes
 
-- name: Logrotate configuration file
-  template:
-    src: logrotate.nginx.j2
-    dest: /etc/logrotate.d/nginx
-  become: yes
+# - name: Reloading systemctl
+  # command: systemctl daemon-reload
+  # become: yes
 
-- name: Delete working directory
-  file:
-    path: "{{directory_app_work_path }}"
-    state: absent
-  become: yes
+# - name: Logrotate configuration file
+  # template:
+    # src: logrotate.nginx.j2
+    # dest: /etc/logrotate.d/nginx
+  # become: yes
 
-- name: Creating working directory to build app
-  file:
-    path: "{{directory_app_work_path }}"
-    owner: root
-    group: root
-    state: directory
-    mode: 0777
-  become: yes
+# - name: Delete working directory
+  # file:
+    # path: "{{directory_app_work_path }}"
+    # state: absent
+  # become: yes
 
-- name: git cloning app
-  git:
-    repo: https://VLE20@bitbucket.org/soc-gen/soc-ihm.git
-    dest: "{{directory_app_work_path}}/soc-ihm"
-    version: "{{soc_ihm_version}}"
+# - name: Creating working directory to build app
+  # file:
+    # path: "{{directory_app_work_path }}"
+    # owner: root
+    # group: root
+    # state: directory
+    # mode: 0777
+  # become: yes
 
-- name: Configuring nodejs repo
-  template:
-    src: nodesource-el.repo.j2
-    dest: /etc/yum.repos.d/nodesource-el.repo
-  become: yes
+# - name: git cloning app
+  # git:
+    # repo: https://VLE20@bitbucket.org/soc-gen/soc-ihm.git
+    # dest: "{{directory_app_work_path}}/soc-ihm"
+    # version: "{{soc_ihm_version}}"
 
-- name: Installing nodejs
-  yum:
-    name: nodejs
-    state: present
-  become: yes
+# - name: Configuring nodejs repo
+  # template:
+    # src: nodesource-el.repo.j2
+    # dest: /etc/yum.repos.d/nodesource-el.repo
+  # become: yes
 
-- name: Configuring Infrastructure for app
-  template:
-    src: infra.ts.j2
-    dest: "{{directory_app_work_path }}/soc-ihm/app/config/infra.ts"
+# - name: Installing nodejs
+  # yum:
+    # name: nodejs
+    # state: present
+  # become: yes
 
-- name: Installing npm modules to build app
-  npm:
-    production: yes
-    path: "{{directory_app_work_path }}/soc-ihm"
-  become: yes
+# - name: Configuring Infrastructure for app
+  # template:
+    # src: infra.ts.j2
+    # dest: "{{directory_app_work_path }}/soc-ihm/app/config/infra.ts"
 
-- name: Going to working directory and building app
-  command: npm run build_prod
-  args:
-    chdir: "{{directory_app_work_path }}/soc-ihm"
+# - name: Installing npm modules to build app
+  # npm:
+    # production: yes
+    # path: "{{directory_app_work_path }}/soc-ihm"
+  # become: yes
 
-- name: Creating working directory to build app
-  file:
-    path: "{{directory_application_path }}/soc-ihm"
-    owner: root
-    group: root
-    state: directory
-    mode: 0755
-  become: yes
+# - name: Going to working directory and building app
+  # command: npm run build_prod
+  # args:
+    # chdir: "{{directory_app_work_path }}/soc-ihm"
 
-- name: Moving builded app into nginx directory
-  command: "cp -R {{directory_app_work_path}}/soc-ihm/dist {{directory_application_path}}/soc-ihm"
-  become: yes
+# - name: Creating working directory to build app
+  # file:
+    # path: "{{application_directory }}/soc-ihm"
+    # owner: root
+    # group: root
+    # state: directory
+    # mode: 0777
+  # become: yes
 
-- name: Cleaning app source code
-  file:
-    path: "{{directory_app_work_path}}"
-    state: absent
-  become: yes
+# - name: Moving builded app into nginx directory
+  # command: "cp -R {{directory_app_work_path}}/soc-ihm/dist {{application_directory}}/soc-ihm"
+  # become: yes
 
-- name: Starting Nginx service
-  service:
-    name: nginx
-    state: restarted
-    enabled: yes
-  become: yes
+# - name: Cleaning app source code
+  # file:
+    # path: "{{directory_app_work_path}}"
+    # state: absent
+  # become: yes
+
+# - name: Starting Nginx service
+  # service:
+    # name: nginx
+    # state: restarted
+    # enabled: yes
+  # become: yes

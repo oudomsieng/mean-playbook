@@ -15,6 +15,12 @@
 - hosts: NODEJS_API
   roles:
   - { role: role-nodejs-api,
+      vg_name: VolGroup00,
+      pv_list: /dev/sdb,
+      lv_name: MyLogVol,
+      lv_size: 512,
+      lv_fs: ext4,
+      lv_deploy: true
       nodejs_deploy_config: true,
       nodejs_work_path: /home/core,
       soc_api_logpath: /home/core/soc-api-log,
@@ -26,14 +32,20 @@
 
 - hosts: ANGULAR_IHM
   roles:
-   - { role: role-soc-ihm, 
+   - { role: role-soc-ihm,
+       vg_name: VolGroup00,
+       pv_list: /dev/sdb,
+       lv_name: MyLogVol,
+       lv_size: 512,
+       lv_fs: ext4, 
        nginx_log_path: /var/log/nginxlogs, 
-       application_directory: /usr/share/nginx,
+       application_directory: /applis,
        soc_ihm_version: v2.0.2,
        mongodbprimary_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
        mongodbsecondary_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}",
        nodejs_api_ip:  "{{ groups['NODEJS_API'][0] }}",
        angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}",  
-       nginx_deploy_config: true 
+       nginx_deploy_config: true,
+       lv_deploy: true	   
      }
 
