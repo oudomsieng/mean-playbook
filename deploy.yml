@@ -16,18 +16,20 @@
   roles:
   - { role: role-nodejs-api,
       vg_name: VolGroup00,
-      pv_list: /dev/sdb,
+      pv_list: /dev/sda1,
       lv_name: MyLogVol,
-      lv_size: 512,
+      lv_size: 120,
       lv_fs: ext4,
       lv_deploy: true,
       nodejs_deploy_config: true,
-      api_work_path: /home/core/satisfaction-api,
-      api_logpath: /home/core/satisfaction-api-log,
+      application_directory: /applis/satisfaction,
       api_service_name: satisfactionApi,
       nodejs_api_port: 8000,
       mongodb_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
-      api_nexus_url: "http://www.filehosting.org/file/download/606766/dngS1qf14JX7JbLU",
+      mongo_db_name: satisfaction-storage,
+      mongo_admin_user: siteAdmin,
+      mongo_admin_pass: admin,
+      api_nexus_url: "http://www.filehosting.org/file/download/606802/xo27n3h0mRXpi4p3",
       infra_filename: infra-satisfaction.json,
       angular_ihm_domain: "{{ groups['ANGULAR_IHM'][0] }}",
       angular_ihm_ip: "{{ groups['ANGULAR_IHM'][0] }}"
@@ -37,13 +39,13 @@
   roles:
    - { role: role-soc-ihm,
        vg_name: VolGroup00,
-       pv_list: /dev/sdb,
+       pv_list: /dev/sda1,
        lv_name: MyLogVol,
-       lv_size: 512,
+       lv_size: 120,
        lv_fs: ext4, 
        nginx_log_path: /var/log/nginxlogs, 
-       application_directory: /applis,
-       ihm_nexus_url: "http://www.filehosting.org/file/download/606767/dsBVFFCvgoqJXPZD",
+       application_directory: /applis/satisfaction,
+       ihm_nexus_url: "http://www.filehosting.org/file/download/606767/1tCEynFExuqpYzVC",
        infra_filename: infra-satisfaction.js,
        mongodbprimary_ip_address: "{{ groups['MONGODB_PRIMARY'][0] }}",
        mongodbsecondary_ip_address: "{{ groups['MONGODB_SECONDARY'][0] }}",
@@ -53,4 +55,3 @@
        nginx_deploy_config: true,
        lv_deploy: true
      }
-

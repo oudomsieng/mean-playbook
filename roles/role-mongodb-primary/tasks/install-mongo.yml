@@ -119,5 +119,5 @@
   become: yes
   
 - name: Add dbadmin to db
-  command: mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('soc-db').runCommand({createUser":" '{{ mongo_admin_user }}', pwd":" '{{ mongo_admin_pass }}', roles":" [{role":" 'dbOwner', db":" '{{ mongo_db_name }}'}]})"
+  command: mongo admin -u {{ mongo_admin_user }} -p {{ mongo_admin_pass }} --eval "db.getSiblingDB('{{ mongo_db_name }}').runCommand({createUser":" '{{ mongo_admin_user }}', pwd":" '{{ mongo_admin_pass }}', roles":" [{role":" 'dbOwner', db":" '{{ mongo_db_name }}'}]})"
   become: yes

@@ -48,6 +48,12 @@
     state: present
   become: yes
 
+- name: Set selinux permission
+  selinux_permissive: 
+    domain: httpd_t
+    permissive: true
+  become: yes
+  
 - name: Configuring Nginx
   template:
     src: nginx.conf.j2
@@ -95,12 +101,12 @@
 - name: download ihm
   get_url:
     url: "{{ ihm_nexus_url }}"
-    dest: "{{ application_directory }}/ihm.zip"
+    dest: "{{ application_directory }}/ihm/ihm.zip"
     mode: 0777
 
 - name: unzip ihm
   unarchive:
-    src: "{{ application_directory }}/ihm.zip"
+    src: "{{ application_directory }}/ihm/ihm.zip"
     dest: "{{ application_directory }}/ihm"
     remote_src: yes
 

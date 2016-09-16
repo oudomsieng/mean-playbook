@@ -1,9 +1,9 @@
 {
   "satisfaction-storage": {
     "mongodb": {
-      "database": "satisfaction-storage",
-      "username": "siteAdmin",
-      "password": "admin",
+      "database": "{{ mongo_db_name }}",
+      "username": "{{ mongo_admin_user }}",
+      "password": "{{ mongo_admin_pass }}",
       "hosts": [
         {
           "host": "{{ mongodb_ip_address }}",

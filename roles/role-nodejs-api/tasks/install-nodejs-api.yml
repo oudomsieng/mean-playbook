@@ -13,10 +13,12 @@
 - name: test input vars
   assert: { that: "{{ item }} is defined" }
   with_items:
-      - api_work_path
+      - application_directory
       - api_nexus_url
-      - api_logpath
       - mongodb_ip_address
+      - mongo_db_name
+      - mongo_admin_user
+      - mongo_admin_pass
       - angular_ihm_domain
       - angular_ihm_ip
       - api_service_name

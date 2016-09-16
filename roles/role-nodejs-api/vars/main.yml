@@ -4,4 +4,6 @@ nodejs_image_name: nodejs-api
 nodejs_container_name: nodejs-api
 nodejs_api_hostname: node1.mongo.sg
 nodejs_gpg_key: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+api_work_path: "{{ application_directory }}/api"
+api_logpath: "{{ application_directory }}/logs"
 
