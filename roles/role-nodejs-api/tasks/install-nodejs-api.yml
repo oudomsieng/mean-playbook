@@ -77,6 +77,14 @@
     state: directory
     mode: 0777
   become: yes
+
+# - name: Mounting ApiLV to api directory
+  # mount:
+  # src: "/dev/{{vg_name}}/{{api_lv_name}}"
+    # name: "{{api_work_path}}"
+    # fstype: "{{lv_fs}}"
+    # state: mounted
+  # become: yes
   
 - name: Create nodejs logging diectory if not exist
   file: 
@@ -87,12 +95,26 @@
     mode: 0777
   become: yes
 
+# - name: Mounting LogsLV to log directory
+  # mount:
+  # src: "/dev/{{vg_name}}/{{log_lv_name}}"
+    # name: "{{api_logpath}}"
+    # fstype: "{{lv_fs}}"
+    # state: mounted
+  # become: yes
+
 - name: download api
   get_url:
     url: "{{ api_nexus_url }}"
     dest: "{{ api_work_path }}/api.zip"
     mode: 0777
 
+- name: downloading unzip
+  yum:
+    name: unzip
+    state: present
+  become: yes
+  
 - name: unzip api
   unarchive:
     src: "{{ api_work_path }}/api.zip"

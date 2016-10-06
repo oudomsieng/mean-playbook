@@ -67,6 +67,14 @@
     mode: 755
   become: yes
 
+# - name: Mounting LogsLV to log directory
+  # mount:
+  # src: "/dev/{{vg_name}}/{{log_lv_name}}"
+    # name: "{{nginx_log_path}}"
+    # fstype: "{{lv_fs}}"
+    # state: mounted
+  # become: yes
+
 - name: Configuring Nginx service
   template:
     src: nginx.service.j2
@@ -98,11 +106,25 @@
     mode: 0777
   become: yes
 
+# - name: Mounting IhmLV to ihm directory
+  # mount:
+  # src: "/dev/{{vg_name}}/{{ihm_lv_name}}"
+    # name: "{{application_directory }}/ihm"
+    # fstype: "{{lv_fs}}"
+    # state: mounted
+  # become: yes
+
 - name: download ihm
   get_url:
     url: "{{ ihm_nexus_url }}"
     dest: "{{ application_directory }}/ihm/ihm.zip"
     mode: 0777
+
+- name: downloading unzip
+  yum:
+    name: unzip
+    state: present
+  become: yes
 
 - name: unzip ihm
   unarchive:

@@ -8,28 +8,58 @@
      -  lv_name
      -  lv_size
      -  lv_fs 
+     # -  api_lv_name
+     # -  api_lv_size
+     # - log_lv_name
+     # - log_lv_size 	 
   when: lv_deploy
 
-- name: Creating VG if not exists
-  lvg:
-    vg: "{{vg_name}}"
-    pvs: "{{pv_list}}"
-  ignore_errors: yes
-  become: yes
+# - name: Creating VG if not exists
+  # lvg:
+    # vg: "{{vg_name}}"
+    # pvs: "{{pv_list}}"
+  # ignore_errors: yes
+  # become: yes
 
-- name: Creating LV if not exists
+- name: Creating satisfaction LV if not exists
   lvol:
     vg: "{{vg_name}}"
-    lv: "{{lv_name}}"
+    lv: "{{api_lv_name}}"
     size: "{{lv_size}}"
   ignore_errors: yes	
   become: yes 
 
-- name: Creating filesystem for lv
+# - name: Creating api LV if not exists
+  # lvol:
+    # vg: "{{vg_name}}"
+    # lv: "{{api_lv_name}}"
+    # size: "{{api_lv_size}}"	
+  # become: yes
+
+# - name: Creating log LV if not exists
+  # lvol:
+    # vg: "{{vg_name}}"
+    # lv: "{{log_lv_name}}"
+    # size: "{{log_lv_size}}"	
+  # become: yes
+
+- name: Creating filesystem for lv satisfaction
   filesystem:
     dev: "/dev/{{vg_name}}/{{lv_name}}"
     fstype: "{{lv_fs}}"
   become: yes
+
+# - name: Creating filesystem for lv api
+  # filesystem:
+    # dev: "/dev/{{vg_name}}/{{api_lv_name}}"
+    # fstype: "{{lv_fs}}"
+  # become: yes
+
+# - name: Creating filesystem for lv Log
+  # filesystem:
+    # dev: "/dev/{{vg_name}}/{{log_lv_name}}"
+    # fstype: "{{lv_fs}}"
+  # become: yes
 
 - name: Creating applis directory
   file:
